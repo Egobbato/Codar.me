@@ -1,11 +1,11 @@
 
 
 
-function Home() {
+export function Home() {
   return (
     <div className="h-screen bg-red-700 text-white p-4 flex flex-col items-center space-y-6">
       <header className="container flex justify-center max-w-5xl p-4">
-      <img src="../public/logo/logo-fundo-vinho.svg" className="w-40"></img>
+      <img src="../logo/logo-fundo-vinho.svg" className="w-40"></img>
       </header>
       
     <div className="container max-w-5xl flex-1 p-4 flex flex-col items-center md:flex-row space-y-6 md:space-y-0 md:space-x-6" >
@@ -25,4 +25,4 @@ function Home() {
  
 }
 
-export default Home
+
