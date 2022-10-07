@@ -2,11 +2,18 @@
   "name": "api",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {},
   "author": {
     "name": "Eduardo Gobbato",
     "email": "egobbato@hotmail.com"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@koa/cors": "^3.4.2",
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^12.0.0"
+  }
 }
