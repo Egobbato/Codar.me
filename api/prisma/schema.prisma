@@ -35,6 +35,8 @@ model Game {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([homeTeam, awayTeam, gameTime])
 }
 
 model Hunch {
