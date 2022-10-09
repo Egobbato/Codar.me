@@ -1,46 +1,95 @@
-import {Icon, Input} from '~/components'
+import { Icon, Input } from "~/components";
+import axios from "axios";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { useLocalStorage } from "react-use";
+import { Navigate } from "react-router-dom";
 
+const validationSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Informe um email valido")
+    .required("Preencha seu email"),
+  password: yup.string().required("Digite sua senha"),
+});
 
+export const Login = () => {
+  const [auth, setAuth] = useLocalStorage("auth", {});
+  const formik = useFormik({
+    onSubmit: async (values) => {
+      const res = await axios({
+        method: "get",
+        baseURL: "http://localhost:3000",
+        url: "/login",
+        auth: {
+          username: values.email,
+          password: values.password,
+        },
+      });
 
+      setAuth(res.data);
+    },
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema,
+  });
 
-export const Login = () =>{
-    return(
-        <div>
-<header className="p-4 border-b border-red-300">
-    <div className="container max-w-xl flex justify-center">
-        <img src="../public/logo/logo-fundo-branco.svg" className="w-32 md:w-40"></img>
-    </div>
-      
+  if (auth?.user?.id) {
+    return <Navigate to="/dashboard" replace={true}></Navigate>;
+  }
+
+  return (
+    <div>
+      <header className="p-4 border-b border-red-300">
+        <div className="container max-w-xl flex justify-center">
+          <img
+            src="../public/logo/logo-fundo-branco.svg"
+            className="w-32 md:w-40"
+          ></img>
+        </div>
       </header>
 
       <main className="container p-4 max-w-xl">
         <div className="p-4 flex space-x-4 items-center">
-            <a href="/">
-            <Icon name="back" className="h-6"/>
-            </a>
-            <h2 className="text-xl font-bold">Entre na sua conta</h2>
+          <a href="/">
+            <Icon name="back" className="h-6" />
+          </a>
+          <h2 className="text-xl font-bold">Entre na sua conta</h2>
         </div>
-<form className="p-4 space-y-6">
-    <Input
-    type="text"
-    name="email"
-    label="Seu e-mail"
-    placeholder="Digite seu e-mail"/>
+        <form className="p-4 space-y-6" onSubmit={formik.handleSubmit}>
+          <Input
+            type="text"
+            name="email"
+            label="Seu e-mail"
+            placeholder="Digite seu e-mail"
+            error={formik.touched.email && formik.errors.email}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
 
-<Input
-    type="password"
-    name="senha"
-    label="Sua senha"
-    placeholder="Digite sua senha"/>
+          <Input
+            type="password"
+            name="password"
+            label="Sua senha"
+            placeholder="Digite uma senha"
+            error={formik.touched.password && formik.errors.password}
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
 
-    <a href='/dashboard' className="w-full text-white text-center bg-red-500 px-6 py-3 rounded-xl  ">Entrar</a>
-    
-</form>
-
-
-
+          <button
+            type="submit"
+            className=" block w-full text-white text-center bg-red-500 px-6 py-3 rounded-xl disabled:opacity-50"
+            disabled={!formik.isValid || formik.isSubmitting}
+          >
+            {formik.isSubmitting ? "Carregando..." : "Entrar"}
+          </button>
+        </form>
       </main>
-        </div>
-        
-    )
-}
+    </div>
+  );
+};
