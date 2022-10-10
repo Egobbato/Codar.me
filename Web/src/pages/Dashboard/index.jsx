@@ -1,13 +1,13 @@
 import axios from "axios";
 import { Navigate } from "react-router-dom";
-import { useLocalStorage, useAsync, useAsyncFn } from "react-use";
+import { useLocalStorage, useAsyncFn } from "react-use";
 import { Icon, Card, DateSelect } from "~/components";
-import { format, formatISO } from "date-fns";
+import { format, formatISO, setDate } from "date-fns";
 import { useState } from "react";
 import { useEffect } from "react";
 
 export const Dashboard = () => {
-  const [currentDate, SetDate] = useState(formatISO(new Date(2022, 10, 20)));
+  const [currentDate, setDate] = useState(formatISO(new Date(2022, 10, 20)));
   const [auth] = useLocalStorage("auth", {});
 
   const [state, doFetch] = useAsyncFn(async (params) => {
@@ -50,7 +50,7 @@ export const Dashboard = () => {
         </section>
 
         <section id="content" className="p-4 container max-w-3xl space-y-4">
-          <DateSelect />
+          <DateSelect currentDate={currentDate} onChange={setDate} />
 
           <div className="space-y-4">
             {state.loading && "Carregando jogos..."}
