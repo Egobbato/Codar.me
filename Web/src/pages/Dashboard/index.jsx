@@ -59,9 +59,10 @@ export const Dashboard = () => {
               !state.error &&
               state.value?.map((game) => (
                 <Card
-                  homeTeam={{ slug: game.homeTeam }}
-                  awayTeam={{ slug: game.awayTeam }}
-                  match={{ time: format(new Date(game.gameTime), "H:mm") }}
+                  gameId={game.id}
+                  homeTeam={game.homeTeam}
+                  awayTeam={game.awayTeam}
+                  gameTime={format(new Date(game.gameTime), "H:mm")}
                 />
               ))}
           </div>
