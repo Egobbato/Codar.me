@@ -10,7 +10,27 @@ export const Dashboard = () => {
   const [currentDate, setDate] = useState(formatISO(new Date(2022, 10, 20)));
   const [auth] = useLocalStorage("auth", {});
 
-  const [state, doFetch] = useAsyncFn(async (params) => {
+  const [{ value: user, loading, error }, fetchHunches] = useAsyncFn(
+    async () => {
+      const res = await axios({
+        method: "get",
+        baseURL: "http://localhost:3000",
+        url: `/${auth.user.username}`,
+      });
+
+      const hunches = res.data.hunches.reduce((acc, hunch) => {
+        acc[hunch.gameId] = hunch;
+        return acc;
+      }, {});
+
+      return {
+        ...res.data,
+        hunches,
+      };
+    }
+  );
+
+  const [games, fetchGames] = useAsyncFn(async (params) => {
     const res = await axios({
       method: "get",
       baseURL: "http://localhost:3000",
@@ -21,8 +41,16 @@ export const Dashboard = () => {
     return res.data;
   });
 
+  const isLoading = games.loading || loading;
+  const hasError = games.error || error;
+  const isDone = !isLoading && !hasError;
+
   useEffect(() => {
-    doFetch({ gameTime: currentDate });
+    fetchHunches();
+  }, []);
+
+  useEffect(() => {
+    fetchGames({ gameTime: currentDate });
   }, [currentDate]);
 
   if (!auth?.user?.id) {
@@ -36,7 +64,7 @@ export const Dashboard = () => {
             src="../public/logo/logo-fundo-vermelho.svg"
             className="w-28 md:w-40"
           ></img>
-          <a href="/profile">
+          <a href={`/${auth?.user?.username}`}>
             <Icon name="profile" className="w-10" />
           </a>
         </div>
@@ -53,16 +81,18 @@ export const Dashboard = () => {
           <DateSelect currentDate={currentDate} onChange={setDate} />
 
           <div className="space-y-4">
-            {state.loading && "Carregando jogos..."}
-            {state.error && "Ops, algo deu errado!"}
-            {!state.loading &&
-              !state.error &&
-              state.value?.map((game) => (
+            {isLoading && "Carregando jogos..."}
+            {hasError && "Ops, algo deu errado!"}
+            {isDone &&
+              games.value?.map((game) => (
                 <Card
+                  key={game.id}
                   gameId={game.id}
                   homeTeam={game.homeTeam}
                   awayTeam={game.awayTeam}
                   gameTime={format(new Date(game.gameTime), "H:mm")}
+                  homeTeamScore={user?.hunches?.[game.id]?.homeTeamScore || ""}
+                  awayTeamScore={user?.hunches?.[game.id]?.homeTeamScore || ""}
                 />
               ))}
           </div>
