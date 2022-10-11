@@ -17,12 +17,12 @@ export const Card = ({
   awayTeamScore,
   gameTime,
 }) => {
-  const auth = useLocalStorage("auth");
+  const [auth] = useLocalStorage("auth");
   const formik = useFormik({
     onSubmit: (values) => {
       axios({
         method: "post",
-        baseURL: "http://localhost.3000",
+        baseURL: "http://localhost:3000",
         url: "/hunches",
         headers: {
           authorization: `Bearer ${auth.accessToken}`,
